@@ -68,3 +68,5 @@ dist/
 # CLion
 .idea/
 
+cmake-build-debug*/
+

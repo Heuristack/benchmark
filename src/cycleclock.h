@@ -56,7 +56,8 @@ namespace benchmark {
 //    http://peter.kuscsik.com/wordpress/?p=14
 // with modifications by m3b.  See also
 //    https://setisvn.ssl.berkeley.edu/svn/lib/fftw-3.0.1/kernel/cycle.h
-namespace cycleclock {
+namespace cycleclock
+{
 // This should return the number of cycles since power-on.  Thread-safe.
 inline BENCHMARK_ALWAYS_INLINE int64_t Now() {
 #if defined(BENCHMARK_OS_MACOSX)

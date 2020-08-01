@@ -345,9 +345,11 @@ inline BENCHMARK_ALWAYS_INLINE void DoNotOptimize(Tp const& value) {
 #endif
 
 // This class is used for user-defined counters.
-class Counter {
+class Counter
+{
  public:
-  enum Flags {
+  enum Flags
+  {
     kDefaults = 0,
     // Mark the counter as a rate. It will be presented divided
     // by the duration of the benchmark.
@@ -374,7 +376,8 @@ class Counter {
     kInvert = 1U << 31U
   };
 
-  enum OneK {
+  enum OneK
+  {
     // 1'000 items per 1k
     kIs1000 = 1000,
     // 1'024 items per 1k
@@ -425,9 +428,10 @@ typedef double(BigOFunc)(IterationCount);
 typedef double(StatisticsFunc)(const std::vector<double>&);
 
 namespace internal {
-struct Statistics {
+struct Statistics
+{
   std::string name_;
-  StatisticsFunc* compute_;
+  StatisticsFunc * compute_;
 
   Statistics(const std::string& name, StatisticsFunc* compute)
       : name_(name), compute_(compute) {}
@@ -461,7 +465,8 @@ enum AggregationReportMode
 
 // State is passed to a running Benchmark and contains state for the
 // benchmark to use.
-class State {
+class State
+{
  public:
   struct StateIterator;
   friend struct StateIterator;
@@ -688,7 +693,8 @@ class State {
   friend struct internal::BenchmarkInstance;
 };
 
-inline BENCHMARK_ALWAYS_INLINE bool State::KeepRunning() {
+inline BENCHMARK_ALWAYS_INLINE bool State::KeepRunning()
+{
   return KeepRunningInternal(1, /*is_batch=*/false);
 }
 
@@ -696,8 +702,8 @@ inline BENCHMARK_ALWAYS_INLINE bool State::KeepRunningBatch(IterationCount n) {
   return KeepRunningInternal(n, /*is_batch=*/true);
 }
 
-inline BENCHMARK_ALWAYS_INLINE bool State::KeepRunningInternal(IterationCount n,
-                                                               bool is_batch) {
+inline BENCHMARK_ALWAYS_INLINE bool State::KeepRunningInternal(IterationCount n, bool is_batch)
+{
   // total_iterations_ is set to 0 by the constructor, and always set to a
   // nonzero value by StartKepRunning().
   assert(n > 0);
@@ -782,7 +788,8 @@ typedef void(Function)(State&);
 // be called on this object to change the properties of the benchmark.
 // Each method returns "this" so that multiple method calls can
 // chained into one expression.
-class Benchmark {
+class Benchmark
+{
  public:
   virtual ~Benchmark();
 
@@ -1286,8 +1293,10 @@ class Fixture : public internal::Benchmark {
 
 namespace benchmark {
 
-struct CPUInfo {
-  struct CacheInfo {
+struct CPUInfo
+{
+  struct CacheInfo
+  {
     std::string type;
     int level;
     int size;
@@ -1320,7 +1329,8 @@ struct SystemInfo {
 // BenchmarkName contains the components of the Benchmark's name
 // which allows individual fields to be modified or cleared before
 // building the final name using 'str()'.
-struct BenchmarkName {
+struct BenchmarkName
+{
   std::string function_name;
   std::string args;
   std::string min_time;
@@ -1339,9 +1349,11 @@ struct BenchmarkName {
 // can control the destination of the reports by calling
 // RunSpecifiedBenchmarks and passing it a custom reporter object.
 // The reporter object must implement the following interface.
-class BenchmarkReporter {
+class BenchmarkReporter
+{
  public:
-  struct Context {
+  struct Context
+  {
     CPUInfo const& cpu_info;
     SystemInfo const& sys_info;
     // The number of chars in the longest benchmark name.
@@ -1350,7 +1362,8 @@ class BenchmarkReporter {
     Context();
   };
 
-  struct Run {
+  struct Run
+  {
     static const int64_t no_repetition_index = -1;
     enum RunType { RT_Iteration, RT_Aggregate };
 
@@ -1481,15 +1494,18 @@ class BenchmarkReporter {
 
 // Simple reporter that outputs benchmark data to the console. This is the
 // default reporter used by RunSpecifiedBenchmarks().
-class ConsoleReporter : public BenchmarkReporter {
+class ConsoleReporter : public BenchmarkReporter
+{
  public:
-  enum OutputOptions {
+  enum OutputOptions
+  {
     OO_None = 0,
     OO_Color = 1,
     OO_Tabular = 2,
     OO_ColorTabular = OO_Color | OO_Tabular,
     OO_Defaults = OO_ColorTabular
   };
+
   explicit ConsoleReporter(OutputOptions opts_ = OO_Defaults)
       : output_options_(opts_),
         name_field_width_(0),
@@ -1560,7 +1576,8 @@ class MemoryManager {
   virtual void Stop(Result* result) = 0;
 };
 
-inline const char* GetTimeUnitString(TimeUnit unit) {
+inline const char* GetTimeUnitString(TimeUnit unit)
+{
   switch (unit) {
     case kMillisecond:
       return "ms";
@@ -1572,7 +1589,8 @@ inline const char* GetTimeUnitString(TimeUnit unit) {
   BENCHMARK_UNREACHABLE();
 }
 
-inline double GetTimeUnitMultiplier(TimeUnit unit) {
+inline double GetTimeUnitMultiplier(TimeUnit unit)
+{
   switch (unit) {
     case kMillisecond:
       return 1e3;

@@ -140,7 +140,8 @@ struct ValueUnion {
   }
 };
 
-ValueUnion GetSysctlImp(std::string const& Name) {
+ValueUnion GetSysctlImp(std::string const& Name)
+{
 #if defined BENCHMARK_OS_OPENBSD
   int mib[2];
 
@@ -173,7 +174,8 @@ ValueUnion GetSysctlImp(std::string const& Name) {
 }
 
 BENCHMARK_MAYBE_UNUSED
-bool GetSysctl(std::string const& Name, std::string* Out) {
+bool GetSysctl(std::string const& Name, std::string* Out)
+{
   Out->clear();
   auto Buff = GetSysctlImp(Name);
   if (!Buff) return false;
@@ -201,7 +203,8 @@ bool GetSysctl(std::string const& Name, std::array<Tp, N>* Out) {
 #endif
 
 template <class ArgT>
-bool ReadFromFile(std::string const& fname, ArgT* arg) {
+bool ReadFromFile(std::string const& fname, ArgT* arg)
+{
   *arg = ArgT();
   std::ifstream f(fname.c_str());
   if (!f.is_open()) return false;
@@ -209,7 +212,8 @@ bool ReadFromFile(std::string const& fname, ArgT* arg) {
   return f.good();
 }
 
-bool CpuScalingEnabled(int num_cpus) {
+bool CpuScalingEnabled(int num_cpus)
+{
   // We don't have a valid CPU count, so don't even bother.
   if (num_cpus <= 0) return false;
 #ifdef BENCHMARK_OS_QNX
@@ -221,8 +225,7 @@ bool CpuScalingEnabled(int num_cpus) {
   // running on Linux, so we silently ignore all the read errors.
   std::string res;
   for (int cpu = 0; cpu < num_cpus; ++cpu) {
-    std::string governor_file =
-        StrCat("/sys/devices/system/cpu/cpu", cpu, "/cpufreq/scaling_governor");
+    std::string governor_file = StrCat("/sys/devices/system/cpu/cpu", cpu, "/cpufreq/scaling_governor");
     if (ReadFromFile(governor_file, &res) && res != "performance") return true;
   }
 #endif
@@ -249,7 +252,8 @@ int CountSetBitsInCPUMap(std::string Val) {
 }
 
 BENCHMARK_MAYBE_UNUSED
-std::vector<CPUInfo::CacheInfo> GetCacheSizesFromKVFS() {
+std::vector<CPUInfo::CacheInfo> GetCacheSizesFromKVFS()
+{
   std::vector<CPUInfo::CacheInfo> res;
   std::string dir = "/sys/devices/system/cpu/cpu0/cache/";
   int Idx = 0;
@@ -398,7 +402,8 @@ std::vector<CPUInfo::CacheInfo> GetCacheSizesQNX() {
 }
 #endif
 
-std::vector<CPUInfo::CacheInfo> GetCacheSizes() {
+std::vector<CPUInfo::CacheInfo> GetCacheSizes()
+{
 #ifdef BENCHMARK_OS_MACOSX
   return GetCacheSizesMacOSX();
 #elif defined(BENCHMARK_OS_WINDOWS)
@@ -450,7 +455,8 @@ std::string GetSystemName() {
 #endif // Catch-all POSIX block.
 }
 
-int GetNumCPUs() {
+int GetNumCPUs()
+{
 #ifdef BENCHMARK_HAS_SYSCTL
   int NumCPU = -1;
   if (GetSysctl("hw.ncpu", &NumCPU)) return NumCPU;
@@ -525,7 +531,8 @@ int GetNumCPUs() {
   BENCHMARK_UNREACHABLE();
 }
 
-double GetCPUCyclesPerSecond() {
+double GetCPUCyclesPerSecond()
+{
 #if defined BENCHMARK_OS_LINUX || defined BENCHMARK_OS_CYGWIN
   long freq;
 
@@ -538,8 +545,7 @@ double GetCPUCyclesPerSecond() {
   if (ReadFromFile("/sys/devices/system/cpu/cpu0/tsc_freq_khz", &freq)
       // If CPU scaling is in effect, we want to use the *maximum* frequency,
       // not whatever CPU speed some random processor happens to be using now.
-      || ReadFromFile("/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq",
-                      &freq)) {
+      || ReadFromFile("/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq", &freq)) {
     // The value is in kHz (as the file name suggests).  For example, on a
     // 2GHz warpstation, the file contains the value "2000000".
     return freq * 1000.0;
@@ -566,20 +572,28 @@ double GetCPUCyclesPerSecond() {
   while (std::getline(f, ln)) {
     if (ln.empty()) continue;
     size_t SplitIdx = ln.find(':');
+
     std::string value;
-    if (SplitIdx != std::string::npos) value = ln.substr(SplitIdx + 1);
+    if (SplitIdx != std::string::npos) {
+      value = ln.substr(SplitIdx + 1);
+    }
+
     // When parsing the "cpu MHz" and "bogomips" (fallback) entries, we only
     // accept positive values. Some environments (virtual machines) report zero,
     // which would cause infinite looping in WallTime_Init.
     if (startsWithKey(ln, "cpu MHz")) {
       if (!value.empty()) {
         double cycles_per_second = benchmark::stod(value) * 1000000.0;
-        if (cycles_per_second > 0) return cycles_per_second;
+        if (cycles_per_second > 0) {
+          return cycles_per_second;
+        }
       }
-    } else if (startsWithKey(ln, "bogomips")) {
+    }
+    else if (startsWithKey(ln, "bogomips")) {
       if (!value.empty()) {
         bogo_clock = benchmark::stod(value) * 1000000.0;
-        if (bogo_clock < 0.0) bogo_clock = error_value;
+        if (bogo_clock < 0.0)
+          bogo_clock = error_value;
       }
     }
   }
@@ -595,7 +609,9 @@ double GetCPUCyclesPerSecond() {
   // If we found the bogomips clock, but nothing better, we'll use it (but
   // we're not happy about it); otherwise, fallback to the rough estimation
   // below.
-  if (bogo_clock >= 0.0) return bogo_clock;
+  if (bogo_clock >= 0.0) {
+    return bogo_clock;
+  }
 
 #elif defined BENCHMARK_HAS_SYSCTL
   constexpr auto* FreqStr =
@@ -666,16 +682,19 @@ double GetCPUCyclesPerSecond() {
   return static_cast<double>(cycleclock::Now() - start_ticks);
 }
 
-std::vector<double> GetLoadAvg() {
+std::vector<double> GetLoadAvg()
+{
 #if (defined BENCHMARK_OS_FREEBSD || defined(BENCHMARK_OS_LINUX) || \
     defined BENCHMARK_OS_MACOSX || defined BENCHMARK_OS_NETBSD ||  \
     defined BENCHMARK_OS_OPENBSD) && !defined(__ANDROID__)
+
   constexpr int kMaxSamples = 3;
   std::vector<double> res(kMaxSamples, 0.0);
   const int nelem = getloadavg(res.data(), kMaxSamples);
   if (nelem < 1) {
     res.clear();
-  } else {
+  }
+  else {
     res.resize(nelem);
   }
   return res;
@@ -686,17 +705,15 @@ std::vector<double> GetLoadAvg() {
 
 }  // end namespace
 
-const CPUInfo& CPUInfo::Get() {
+const CPUInfo& CPUInfo::Get()
+{
   static const CPUInfo* info = new CPUInfo();
   return *info;
 }
 
 CPUInfo::CPUInfo()
-    : num_cpus(GetNumCPUs()),
-      cycles_per_second(GetCPUCyclesPerSecond()),
-      caches(GetCacheSizes()),
-      scaling_enabled(CpuScalingEnabled(num_cpus)),
-      load_avg(GetLoadAvg()) {}
+  : num_cpus(GetNumCPUs()), cycles_per_second(GetCPUCyclesPerSecond()), caches(GetCacheSizes()),
+    scaling_enabled(CpuScalingEnabled(num_cpus)), load_avg(GetLoadAvg()) {}
 
 
 const SystemInfo& SystemInfo::Get() {

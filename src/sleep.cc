@@ -32,7 +32,8 @@ void SleepForSeconds(double seconds) {
   SleepForMilliseconds(static_cast<int>(kNumMillisPerSecond * seconds));
 }
 #else   // BENCHMARK_OS_WINDOWS
-void SleepForMicroseconds(int microseconds) {
+void SleepForMicroseconds(int microseconds)
+{
   struct timespec sleep_time;
   sleep_time.tv_sec = microseconds / kNumMicrosPerSecond;
   sleep_time.tv_nsec = (microseconds % kNumMicrosPerSecond) * kNumNanosPerMicro;
@@ -40,11 +41,13 @@ void SleepForMicroseconds(int microseconds) {
     ;  // Ignore signals and wait for the full interval to elapse.
 }
 
-void SleepForMilliseconds(int milliseconds) {
+void SleepForMilliseconds(int milliseconds)
+{
   SleepForMicroseconds(milliseconds * kNumMicrosPerMilli);
 }
 
-void SleepForSeconds(double seconds) {
+void SleepForSeconds(double seconds)
+{
   SleepForMicroseconds(static_cast<int>(seconds * kNumMicrosPerSecond));
 }
 #endif  // BENCHMARK_OS_WINDOWS

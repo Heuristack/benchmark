@@ -155,7 +155,8 @@ void ColorPrintf(std::ostream& out, LogColor color, const char* fmt,
 #endif
 }
 
-bool IsColorTerminal() {
+bool IsColorTerminal()
+{
 #if BENCHMARK_OS_WINDOWS
   // On Windows the TERM variable is usually not set, but the
   // console there does support colors.
@@ -174,6 +175,7 @@ bool IsColorTerminal() {
   const char* const term = getenv("TERM");
 
   bool term_supports_color = false;
+
   for (const char* candidate : SUPPORTED_TERM_VALUES) {
     if (term && 0 == strcmp(term, candidate)) {
       term_supports_color = true;

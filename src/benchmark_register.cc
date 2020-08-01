@@ -111,9 +111,8 @@ void BenchmarkFamilies::ClearBenchmarks() {
   families_.shrink_to_fit();
 }
 
-bool BenchmarkFamilies::FindBenchmarks(
-    std::string spec, std::vector<BenchmarkInstance>* benchmarks,
-    std::ostream* ErrStream) {
+bool BenchmarkFamilies::FindBenchmarks(std::string spec, std::vector<BenchmarkInstance>* benchmarks, std::ostream* ErrStream)
+{
   CHECK(ErrStream);
   auto& Err = *ErrStream;
   // Make regular expression out of command-line flag
@@ -247,9 +246,8 @@ Benchmark* RegisterBenchmarkInternal(Benchmark* bench) {
 
 // FIXME: This function is a hack so that benchmark.cc can access
 // `BenchmarkFamilies`
-bool FindBenchmarksInternal(const std::string& re,
-                            std::vector<BenchmarkInstance>* benchmarks,
-                            std::ostream* Err) {
+bool FindBenchmarksInternal(const std::string& re, std::vector<BenchmarkInstance>* benchmarks, std::ostream* Err)
+{
   return BenchmarkFamilies::GetInstance()->FindBenchmarks(re, benchmarks, Err);
 }
 
@@ -476,7 +474,8 @@ Benchmark* Benchmark::DenseThreadRange(int min_threads, int max_threads,
   return this;
 }
 
-Benchmark* Benchmark::ThreadPerCpu() {
+Benchmark* Benchmark::ThreadPerCpu()
+{
   thread_counts_.push_back(CPUInfo::Get().num_cpus);
   return this;
 }

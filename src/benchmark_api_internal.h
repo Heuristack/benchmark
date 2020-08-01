@@ -15,7 +15,8 @@ namespace benchmark {
 namespace internal {
 
 // Information kept per benchmark we may want to run
-struct BenchmarkInstance {
+struct BenchmarkInstance
+{
   BenchmarkName name;
   Benchmark* benchmark;
   AggregationReportMode aggregation_report_mode;
@@ -35,13 +36,10 @@ struct BenchmarkInstance {
   IterationCount iterations;
   int threads;  // Number of concurrent threads to us
 
-  State Run(IterationCount iters, int thread_id, internal::ThreadTimer* timer,
-            internal::ThreadManager* manager) const;
+  State Run(IterationCount iters, int thread_id, internal::ThreadTimer* timer, internal::ThreadManager* manager) const;
 };
 
-bool FindBenchmarksInternal(const std::string& re,
-                            std::vector<BenchmarkInstance>* benchmarks,
-                            std::ostream* Err);
+bool FindBenchmarksInternal(const std::string& re, std::vector<BenchmarkInstance>* benchmarks, std::ostream* Err);
 
 bool IsZero(double n);
 

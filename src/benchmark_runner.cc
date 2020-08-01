@@ -110,15 +110,17 @@ BenchmarkReporter::Run CreateRunReport(
 
 // Execute one thread of benchmark b for the specified number of iterations.
 // Adds the stats collected for the thread into *total.
-void RunInThread(const BenchmarkInstance* b, IterationCount iters,
-                 int thread_id, ThreadManager* manager) {
-  internal::ThreadTimer timer(
-      b->measure_process_cpu_time
+void RunInThread(const BenchmarkInstance* b, IterationCount iters, int thread_id, ThreadManager* manager)
+{
+  internal::ThreadTimer timer(b->measure_process_cpu_time
           ? internal::ThreadTimer::CreateProcessCpuTime()
           : internal::ThreadTimer::Create());
+
   State st = b->Run(iters, thread_id, &timer, manager);
+
   CHECK(st.error_occurred() || st.iterations() >= st.max_iterations)
       << "Benchmark returned before State::KeepRunning() returned false!";
+
   {
     MutexLock l(manager->GetBenchmarkMutex());
     internal::ThreadManager::Result& results = manager->results;
@@ -129,13 +131,14 @@ void RunInThread(const BenchmarkInstance* b, IterationCount iters,
     results.complexity_n += st.complexity_length_n();
     internal::Increment(&results.counters, st.counters);
   }
+
   manager->NotifyThreadComplete();
 }
 
-class BenchmarkRunner {
+class BenchmarkRunner
+{
  public:
-  BenchmarkRunner(const benchmark::internal::BenchmarkInstance& b_,
-                  std::vector<BenchmarkReporter::Run>* complexity_reports_)
+  BenchmarkRunner(const benchmark::internal::BenchmarkInstance& b_, std::vector<BenchmarkReporter::Run>* complexity_reports_)
       : b(b_),
         complexity_reports(*complexity_reports_),
         min_time(!IsZero(b.min_time) ? b.min_time : FLAGS_benchmark_min_time),
@@ -143,18 +146,13 @@ class BenchmarkRunner {
                                    : FLAGS_benchmark_repetitions),
         has_explicit_iteration_count(b.iterations != 0),
         pool(b.threads - 1),
-        iters(has_explicit_iteration_count ? b.iterations : 1) {
-    run_results.display_report_aggregates_only =
-        (FLAGS_benchmark_report_aggregates_only ||
-         FLAGS_benchmark_display_aggregates_only);
-    run_results.file_report_aggregates_only =
-        FLAGS_benchmark_report_aggregates_only;
+        iters(has_explicit_iteration_count ? b.iterations : 1)
+  {
+    run_results.display_report_aggregates_only = (FLAGS_benchmark_report_aggregates_only || FLAGS_benchmark_display_aggregates_only);
+    run_results.file_report_aggregates_only = FLAGS_benchmark_report_aggregates_only;
     if (b.aggregation_report_mode != internal::ARM_Unspecified) {
-      run_results.display_report_aggregates_only =
-          (b.aggregation_report_mode &
-           internal::ARM_DisplayReportAggregatesOnly);
-      run_results.file_report_aggregates_only =
-          (b.aggregation_report_mode & internal::ARM_FileReportAggregatesOnly);
+      run_results.display_report_aggregates_only = (b.aggregation_report_mode & internal::ARM_DisplayReportAggregatesOnly);
+      run_results.file_report_aggregates_only = (b.aggregation_report_mode & internal::ARM_FileReportAggregatesOnly);
     }
 
     for (int repetition_num = 0; repetition_num < repeats; repetition_num++) {
@@ -167,9 +165,7 @@ class BenchmarkRunner {
     // Maybe calculate complexity report
     if ((b.complexity != oNone) && b.last_benchmark_instance) {
       auto additional_run_stats = ComputeBigO(complexity_reports);
-      run_results.aggregates_only.insert(run_results.aggregates_only.end(),
-                                         additional_run_stats.begin(),
-                                         additional_run_stats.end());
+      run_results.aggregates_only.insert(run_results.aggregates_only.end(), additional_run_stats.begin(), additional_run_stats.end());
       complexity_reports.clear();
     }
   }
@@ -197,7 +193,9 @@ class BenchmarkRunner {
     IterationCount iters;
     double seconds;
   };
-  IterationResults DoNIterations() {
+
+  IterationResults DoNIterations()
+  {
     VLOG(2) << "Running " << b.name.str() << " for " << iters << "\n";
 
     std::unique_ptr<internal::ThreadManager> manager;
@@ -205,8 +203,7 @@ class BenchmarkRunner {
 
     // Run all but one thread in separate threads
     for (std::size_t ti = 0; ti < pool.size(); ++ti) {
-      pool[ti] = std::thread(&RunInThread, &b, iters, static_cast<int>(ti + 1),
-                             manager.get());
+      pool[ti] = std::thread(&RunInThread, &b, iters, static_cast<int>(ti + 1), manager.get());
     }
     // And run one thread here directly.
     // (If we were asked to run just one thread, we don't create new threads.)
@@ -273,7 +270,8 @@ class BenchmarkRunner {
     return next_iters;  // round up before conversion to integer.
   }
 
-  bool ShouldReportIterationResults(const IterationResults& i) const {
+  bool ShouldReportIterationResults(const IterationResults& i) const
+  {
     // Determine if this run should be reported;
     // Either it has run for a sufficient amount of time
     // or because an error was reported.
@@ -286,7 +284,8 @@ class BenchmarkRunner {
            ((i.results.real_time_used >= 5 * min_time) && !b.use_manual_time);
   }
 
-  void DoOneRepetition(int64_t repetition_index) {
+  void DoOneRepetition(int64_t repetition_index)
+  {
     const bool is_the_first_repetition = repetition_index == 0;
     IterationResults i;
 
@@ -350,9 +349,8 @@ class BenchmarkRunner {
 
 }  // end namespace
 
-RunResults RunBenchmark(
-    const benchmark::internal::BenchmarkInstance& b,
-    std::vector<BenchmarkReporter::Run>* complexity_reports) {
+RunResults RunBenchmark(const benchmark::internal::BenchmarkInstance& b, std::vector<BenchmarkReporter::Run>* complexity_reports)
+{
   internal::BenchmarkRunner r(b, complexity_reports);
   return r.get_results();
 }

@@ -56,7 +56,8 @@ inline LogType& GetErrorLogInstance() {
   return log;
 }
 
-inline LogType& GetLogInstanceForLevel(int level) {
+inline LogType& GetLogInstanceForLevel(int level)
+{
   if (level <= LogLevel()) {
     return GetErrorLogInstance();
   }

@@ -22,7 +22,8 @@ namespace {
 size_t size_impl() { return 0; }
 
 template <typename Head, typename... Tail>
-size_t size_impl(const Head& head, const Tail&... tail) {
+size_t size_impl(const Head& head, const Tail&... tail)
+{
   return head.size() + size_impl(tail...);
 }
 
@@ -31,8 +32,8 @@ size_t size_impl(const Head& head, const Tail&... tail) {
 void join_impl(std::string&, char) {}
 
 template <typename Head, typename... Tail>
-void join_impl(std::string& s, const char delimiter, const Head& head,
-               const Tail&... tail) {
+void join_impl(std::string& s, const char delimiter, const Head& head, const Tail&... tail)
+{
   if (!s.empty() && !head.empty()) {
     s += delimiter;
   }
@@ -43,16 +44,20 @@ void join_impl(std::string& s, const char delimiter, const Head& head,
 }
 
 template <typename... Ts>
-std::string join(char delimiter, const Ts&... ts) {
+std::string join(char delimiter, const Ts&... ts)
+{
   std::string s;
   s.reserve(sizeof...(Ts) + size_impl(ts...));
   join_impl(s, delimiter, ts...);
   return s;
 }
+
 }  // namespace
 
-std::string BenchmarkName::str() const {
+std::string BenchmarkName::str() const
+{
   return join('/', function_name, args, min_time, iterations, repetitions,
               time_type, threads);
 }
+
 }  // namespace benchmark

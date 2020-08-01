@@ -13,7 +13,7 @@
 #define DECLARE_double(name) extern double FLAG(name)
 #define DECLARE_string(name) extern std::string FLAG(name)
 
-// Macros for defining flags.
+// Macros for defining flags with types.
 #define DEFINE_bool(name, default_val)            \
   bool FLAG(name) =                               \
     benchmark::BoolFromEnv(#name, default_val)

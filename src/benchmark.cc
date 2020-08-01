@@ -215,9 +215,8 @@ void State::FinishKeepRunning() {
 namespace internal {
 namespace {
 
-void RunBenchmarks(const std::vector<BenchmarkInstance>& benchmarks,
-                   BenchmarkReporter* display_reporter,
-                   BenchmarkReporter* file_reporter) {
+void RunBenchmarks(const std::vector<BenchmarkInstance>& benchmarks, BenchmarkReporter* display_reporter, BenchmarkReporter* file_reporter)
+{
   // Note the file_reporter can be null.
   CHECK(display_reporter != nullptr);
 
@@ -226,8 +225,7 @@ void RunBenchmarks(const std::vector<BenchmarkInstance>& benchmarks,
   size_t name_field_width = 10;
   size_t stat_field_width = 0;
   for (const BenchmarkInstance& benchmark : benchmarks) {
-    name_field_width =
-        std::max<size_t>(name_field_width, benchmark.name.str().size());
+    name_field_width = std::max<size_t>(name_field_width, benchmark.name.str().size());
     might_have_aggregates |= benchmark.repetitions > 1;
 
     for (const auto& Stat : *benchmark.statistics)
@@ -244,22 +242,22 @@ void RunBenchmarks(const std::vector<BenchmarkInstance>& benchmarks,
 
   // We flush streams after invoking reporter methods that write to them. This
   // ensures users get timely updates even when streams are not line-buffered.
-  auto flushStreams = [](BenchmarkReporter* reporter) {
+  auto flushStreams = [](BenchmarkReporter* reporter)
+  {
     if (!reporter) return;
     std::flush(reporter->GetOutputStream());
     std::flush(reporter->GetErrorStream());
   };
 
-  if (display_reporter->ReportContext(context) &&
-      (!file_reporter || file_reporter->ReportContext(context))) {
+  if (display_reporter->ReportContext(context) && (!file_reporter || file_reporter->ReportContext(context))) {
     flushStreams(display_reporter);
     flushStreams(file_reporter);
 
     for (const auto& benchmark : benchmarks) {
       RunResults run_results = RunBenchmark(benchmark, &complexity_reports);
 
-      auto report = [&run_results](BenchmarkReporter* reporter,
-                                   bool report_aggregates_only) {
+      auto report = [&run_results](BenchmarkReporter* reporter, bool report_aggregates_only)
+      {
         assert(reporter);
         // If there are no aggregates, do output non-aggregates.
         report_aggregates_only &= !run_results.aggregates_only.empty();
@@ -290,16 +288,20 @@ void RunBenchmarks(const std::vector<BenchmarkInstance>& benchmarks,
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #endif
 
-std::unique_ptr<BenchmarkReporter> CreateReporter(
-    std::string const& name, ConsoleReporter::OutputOptions output_opts) {
+std::unique_ptr<BenchmarkReporter> CreateReporter(std::string const& name, ConsoleReporter::OutputOptions output_opts)
+{
   typedef std::unique_ptr<BenchmarkReporter> PtrType;
+
   if (name == "console") {
     return PtrType(new ConsoleReporter(output_opts));
-  } else if (name == "json") {
+  }
+  else if (name == "json") {
     return PtrType(new JSONReporter);
-  } else if (name == "csv") {
+  }
+  else if (name == "csv") {
     return PtrType(new CSVReporter);
-  } else {
+  }
+  else {
     std::cerr << "Unexpected format: '" << name << "'\n";
     std::exit(1);
   }
@@ -315,8 +317,10 @@ bool IsZero(double n) {
   return std::abs(n) < std::numeric_limits<double>::epsilon();
 }
 
-ConsoleReporter::OutputOptions GetOutputOptions(bool force_no_color) {
+ConsoleReporter::OutputOptions GetOutputOptions(bool force_no_color)
+{
   int output_opts = ConsoleReporter::OO_Defaults;
+
   auto is_benchmark_color = [force_no_color]() -> bool {
     if (force_no_color) {
       return false;
@@ -326,42 +330,58 @@ ConsoleReporter::OutputOptions GetOutputOptions(bool force_no_color) {
     }
     return IsTruthyFlagValue(FLAGS_benchmark_color);
   };
+
   if (is_benchmark_color()) {
     output_opts |= ConsoleReporter::OO_Color;
-  } else {
+  }
+  else {
     output_opts &= ~ConsoleReporter::OO_Color;
   }
   if (FLAGS_benchmark_counters_tabular) {
     output_opts |= ConsoleReporter::OO_Tabular;
-  } else {
+  }
+  else {
     output_opts &= ~ConsoleReporter::OO_Tabular;
   }
+
   return static_cast<ConsoleReporter::OutputOptions>(output_opts);
 }
 
 }  // end namespace internal
 
-size_t RunSpecifiedBenchmarks() {
+size_t RunSpecifiedBenchmarks()
+{
   return RunSpecifiedBenchmarks(nullptr, nullptr);
 }
 
-size_t RunSpecifiedBenchmarks(BenchmarkReporter* display_reporter) {
+size_t RunSpecifiedBenchmarks(BenchmarkReporter* display_reporter)
+{
   return RunSpecifiedBenchmarks(display_reporter, nullptr);
 }
 
-size_t RunSpecifiedBenchmarks(BenchmarkReporter* display_reporter,
-                              BenchmarkReporter* file_reporter) {
+size_t RunSpecifiedBenchmarks(BenchmarkReporter* display_reporter, BenchmarkReporter* file_reporter)
+{
+  /**
+   *
+   * Filters: Figure out spec for filters
+   *
+  **/
   std::string spec = FLAGS_benchmark_filter;
-  if (spec.empty() || spec == "all")
+  if (spec.empty() || spec == "all") {
     spec = ".";  // Regexp that matches all benchmarks
+  }
 
-  // Setup the reporters
+  /**
+   *
+   * Reporters: 1. display reporter; 2. file reporter;
+   *
+  **/
   std::ofstream output_file;
   std::unique_ptr<BenchmarkReporter> default_display_reporter;
   std::unique_ptr<BenchmarkReporter> default_file_reporter;
+
   if (!display_reporter) {
-    default_display_reporter = internal::CreateReporter(
-        FLAGS_benchmark_format, internal::GetOutputOptions());
+    default_display_reporter = internal::CreateReporter(FLAGS_benchmark_format, internal::GetOutputOptions());
     display_reporter = default_display_reporter.get();
   }
   auto& Out = display_reporter->GetOutputStream();
@@ -381,17 +401,20 @@ size_t RunSpecifiedBenchmarks(BenchmarkReporter* display_reporter,
       std::exit(1);
     }
     if (!file_reporter) {
-      default_file_reporter = internal::CreateReporter(
-          FLAGS_benchmark_out_format, ConsoleReporter::OO_None);
+      default_file_reporter = internal::CreateReporter(FLAGS_benchmark_out_format, ConsoleReporter::OO_None);
       file_reporter = default_file_reporter.get();
     }
     file_reporter->SetOutputStream(&output_file);
     file_reporter->SetErrorStream(&output_file);
   }
 
+  /**
+   *
+   * Benchmarks: 1. Figure out filtered benchmarks; 2. Run filtered benchmarks;
+   *
+  **/
   std::vector<internal::BenchmarkInstance> benchmarks;
   if (!FindBenchmarksInternal(spec, &benchmarks, &Err)) return 0;
-
   if (benchmarks.empty()) {
     Err << "Failed to match any benchmarks against regex: " << spec << "\n";
     return 0;
@@ -400,7 +423,8 @@ size_t RunSpecifiedBenchmarks(BenchmarkReporter* display_reporter,
   if (FLAGS_benchmark_list_tests) {
     for (auto const& benchmark : benchmarks)
       Out << benchmark.name.str() << "\n";
-  } else {
+  }
+  else {
     internal::RunBenchmarks(benchmarks, display_reporter, file_reporter);
   }
 
@@ -431,46 +455,42 @@ void PrintUsageAndExit() {
   exit(0);
 }
 
-void ParseCommandLineFlags(int* argc, char** argv) {
+void ParseCommandLineFlags(int * argc, char ** argv)
+{
   using namespace benchmark;
-  BenchmarkReporter::Context::executable_name =
-      (argc && *argc > 0) ? argv[0] : "unknown";
+
+  BenchmarkReporter::Context::executable_name = (argc && *argc > 0) ? argv[0] : "unknown";
+
   for (int i = 1; argc && i < *argc; ++i) {
-    if (ParseBoolFlag(argv[i], "benchmark_list_tests",
-                      &FLAGS_benchmark_list_tests) ||
+    if (ParseBoolFlag(argv[i], "benchmark_list_tests", &FLAGS_benchmark_list_tests) ||
         ParseStringFlag(argv[i], "benchmark_filter", &FLAGS_benchmark_filter) ||
-        ParseDoubleFlag(argv[i], "benchmark_min_time",
-                        &FLAGS_benchmark_min_time) ||
-        ParseInt32Flag(argv[i], "benchmark_repetitions",
-                       &FLAGS_benchmark_repetitions) ||
-        ParseBoolFlag(argv[i], "benchmark_report_aggregates_only",
-                      &FLAGS_benchmark_report_aggregates_only) ||
-        ParseBoolFlag(argv[i], "benchmark_display_aggregates_only",
-                      &FLAGS_benchmark_display_aggregates_only) ||
+        ParseDoubleFlag(argv[i], "benchmark_min_time", &FLAGS_benchmark_min_time) ||
+        ParseInt32Flag(argv[i], "benchmark_repetitions", &FLAGS_benchmark_repetitions) ||
+        ParseBoolFlag(argv[i], "benchmark_report_aggregates_only", &FLAGS_benchmark_report_aggregates_only) ||
+        ParseBoolFlag(argv[i], "benchmark_display_aggregates_only", &FLAGS_benchmark_display_aggregates_only) ||
         ParseStringFlag(argv[i], "benchmark_format", &FLAGS_benchmark_format) ||
         ParseStringFlag(argv[i], "benchmark_out", &FLAGS_benchmark_out) ||
-        ParseStringFlag(argv[i], "benchmark_out_format",
-                        &FLAGS_benchmark_out_format) ||
+        ParseStringFlag(argv[i], "benchmark_out_format", &FLAGS_benchmark_out_format) ||
         ParseStringFlag(argv[i], "benchmark_color", &FLAGS_benchmark_color) ||
-        // "color_print" is the deprecated name for "benchmark_color".
-        // TODO: Remove this.
-        ParseStringFlag(argv[i], "color_print", &FLAGS_benchmark_color) ||
-        ParseBoolFlag(argv[i], "benchmark_counters_tabular",
-                      &FLAGS_benchmark_counters_tabular) ||
+        ParseBoolFlag(argv[i], "benchmark_counters_tabular", &FLAGS_benchmark_counters_tabular) ||
         ParseInt32Flag(argv[i], "v", &FLAGS_v)) {
-      for (int j = i; j != *argc - 1; ++j) argv[j] = argv[j + 1];
+
+      for (int j = i; j != *argc - 1; ++j) argv[j] = argv[j + 1]; // note left shift
 
       --(*argc);
       --i;
-    } else if (IsFlag(argv[i], "help")) {
+    }
+    else if (IsFlag(argv[i], "help")) {
       PrintUsageAndExit();
     }
   }
-  for (auto const* flag :
-       {&FLAGS_benchmark_format, &FLAGS_benchmark_out_format})
+
+  for (auto const * flag : {&FLAGS_benchmark_format, &FLAGS_benchmark_out_format}) {
     if (*flag != "console" && *flag != "json" && *flag != "csv") {
       PrintUsageAndExit();
     }
+  }
+
   if (FLAGS_benchmark_color.empty()) {
     PrintUsageAndExit();
   }
@@ -483,15 +503,16 @@ int InitializeStreams() {
 
 }  // end namespace internal
 
-void Initialize(int* argc, char** argv) {
+void Initialize(int* argc, char** argv)
+{
   internal::ParseCommandLineFlags(argc, argv);
   internal::LogLevel() = FLAGS_v;
 }
 
-bool ReportUnrecognizedArguments(int argc, char** argv) {
+bool ReportUnrecognizedArguments(int argc, char** argv)
+{
   for (int i = 1; i < argc; ++i) {
-    fprintf(stderr, "%s: error: unrecognized command-line flag: %s\n", argv[0],
-            argv[i]);
+    fprintf(stderr, "%s: error: unrecognized command-line flag: %s\n", argv[0], argv[i]);
   }
   return argc > 1;
 }

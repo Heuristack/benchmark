@@ -32,7 +32,8 @@ namespace internal {
 
 extern MemoryManager* memory_manager;
 
-struct RunResults {
+struct RunResults
+{
   std::vector<BenchmarkReporter::Run> non_aggregates;
   std::vector<BenchmarkReporter::Run> aggregates_only;
 
@@ -40,9 +41,7 @@ struct RunResults {
   bool file_report_aggregates_only = false;
 };
 
-RunResults RunBenchmark(
-    const benchmark::internal::BenchmarkInstance& b,
-    std::vector<BenchmarkReporter::Run>* complexity_reports);
+RunResults RunBenchmark( const benchmark::internal::BenchmarkInstance& b, std::vector<BenchmarkReporter::Run>* complexity_reports);
 
 }  // namespace internal
 

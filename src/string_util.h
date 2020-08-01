@@ -20,18 +20,21 @@ __attribute__((format(printf, 1, 2)))
 std::string
 StrFormat(const char* format, ...);
 
-inline std::ostream& StrCatImp(std::ostream& out) BENCHMARK_NOEXCEPT {
+inline std::ostream& StrCatImp(std::ostream& out) BENCHMARK_NOEXCEPT
+{
   return out;
 }
 
 template <class First, class... Rest>
-inline std::ostream& StrCatImp(std::ostream& out, First&& f, Rest&&... rest) {
+inline std::ostream& StrCatImp(std::ostream& out, First&& f, Rest&&... rest)
+{
   out << std::forward<First>(f);
   return StrCatImp(out, std::forward<Rest>(rest)...);
 }
 
 template <class... Args>
-inline std::string StrCat(Args&&... args) {
+inline std::string StrCat(Args&&... args)
+{
   std::ostringstream ss;
   StrCatImp(ss, std::forward<Args>(args)...);
   return ss.str();

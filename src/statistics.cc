@@ -74,8 +74,8 @@ double StatisticsStdDev(const std::vector<double>& v) {
   return Sqrt(v.size() / (v.size() - 1.0) * (avg_squares - Sqr(mean)));
 }
 
-std::vector<BenchmarkReporter::Run> ComputeStats(
-    const std::vector<BenchmarkReporter::Run>& reports) {
+std::vector<BenchmarkReporter::Run> ComputeStats(const std::vector<BenchmarkReporter::Run>& reports)
+{
   typedef BenchmarkReporter::Run Run;
   std::vector<Run> results;
 

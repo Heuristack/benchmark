@@ -133,4 +133,11 @@ static_assert(std::is_same<
   typename std::iterator_traits<benchmark::State::StateIterator>::value_type,
   typename benchmark::State::StateIterator::value_type>::value, "");
 
-BENCHMARK_MAIN();
+// BENCHMARK_MAIN();
+
+int main(int argc, char ** argv)
+{
+  benchmark::Initialize(&argc, argv);
+  if (benchmark::ReportUnrecognizedArguments(argc, argv)) return 1;
+  benchmark::RunSpecifiedBenchmarks();
+}

@@ -7,7 +7,8 @@
 namespace benchmark {
 namespace internal {
 
-class ThreadTimer {
+class ThreadTimer
+{
   explicit ThreadTimer(bool measure_process_cpu_time_)
       : measure_process_cpu_time(measure_process_cpu_time_) {}
 
