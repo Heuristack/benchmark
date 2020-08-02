@@ -131,9 +131,11 @@ BENCHMARK(BM_RangedFor);
 // instantiate std::iterator_traits.
 static_assert(std::is_same<
   typename std::iterator_traits<benchmark::State::StateIterator>::value_type,
-  typename benchmark::State::StateIterator::value_type>::value, "");
+  typename benchmark::State::StateIterator::value_type
+>::value, "");
 
 // BENCHMARK_MAIN();
+
 
 int main(int argc, char ** argv)
 {

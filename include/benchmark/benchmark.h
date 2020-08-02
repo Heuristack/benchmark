@@ -1004,15 +1004,15 @@ void ClearRegisteredBenchmarks();
 namespace internal {
 // The class used to hold all Benchmarks created from static function.
 // (ie those created using the BENCHMARK(...) macros.
-class FunctionBenchmark : public Benchmark {
+class FunctionBenchmark : public Benchmark
+{
  public:
-  FunctionBenchmark(const char* name, Function* func)
-      : Benchmark(name), func_(func) {}
+  FunctionBenchmark(const char* name, Function* func) : Benchmark(name), func_(func) {}
 
   virtual void Run(State& st);
 
  private:
-  Function* func_;
+  Function * func_;
 };
 
 #ifdef BENCHMARK_HAS_CXX11
@@ -1555,7 +1555,8 @@ class BENCHMARK_DEPRECATED_MSG(
 
 // If a MemoryManager is registered, it can be used to collect and report
 // allocation metrics for a run of the benchmark.
-class MemoryManager {
+class MemoryManager
+{
  public:
   struct Result {
     Result() : num_allocs(0), max_bytes_used(0) {}

@@ -15,15 +15,18 @@ class ThreadManager
   explicit ThreadManager(int num_threads)
       : alive_threads_(num_threads), start_stop_barrier_(num_threads) {}
 
-  Mutex& GetBenchmarkMutex() const RETURN_CAPABILITY(benchmark_mutex_) {
+  Mutex& GetBenchmarkMutex() const RETURN_CAPABILITY(benchmark_mutex_)
+  {
     return benchmark_mutex_;
   }
 
-  bool StartStopBarrier() EXCLUDES(end_cond_mutex_) {
+  bool StartStopBarrier() EXCLUDES(end_cond_mutex_)
+  {
     return start_stop_barrier_.wait();
   }
 
-  void NotifyThreadComplete() EXCLUDES(end_cond_mutex_) {
+  void NotifyThreadComplete() EXCLUDES(end_cond_mutex_)
+  {
     start_stop_barrier_.removeThread();
     if (--alive_threads_ == 0) {
       MutexLock lock(end_cond_mutex_);
@@ -31,14 +34,15 @@ class ThreadManager
     }
   }
 
-  void WaitForAllThreads() EXCLUDES(end_cond_mutex_) {
+  void WaitForAllThreads() EXCLUDES(end_cond_mutex_)
+  {
     MutexLock lock(end_cond_mutex_);
-    end_condition_.wait(lock.native_handle(),
-                        [this]() { return alive_threads_ == 0; });
+    end_condition_.wait(lock.native_handle(), [this]() { return alive_threads_ == 0; });
   }
 
  public:
-  struct Result {
+  struct Result
+  {
     IterationCount iterations = 0;
     double real_time_used = 0;
     double cpu_time_used = 0;

@@ -70,7 +70,8 @@ namespace internal {
 
 // Class for managing registered benchmarks.  Note that each registered
 // benchmark identifies a family of related benchmarks to run.
-class BenchmarkFamilies {
+class BenchmarkFamilies
+{
  public:
   static BenchmarkFamilies* GetInstance();
 
@@ -93,12 +94,14 @@ class BenchmarkFamilies {
   Mutex mutex_;
 };
 
-BenchmarkFamilies* BenchmarkFamilies::GetInstance() {
+BenchmarkFamilies* BenchmarkFamilies::GetInstance()
+{
   static BenchmarkFamilies instance;
   return &instance;
 }
 
-size_t BenchmarkFamilies::AddBenchmark(std::unique_ptr<Benchmark> family) {
+size_t BenchmarkFamilies::AddBenchmark(std::unique_ptr<Benchmark> family)
+{
   MutexLock l(mutex_);
   size_t index = families_.size();
   families_.push_back(std::move(family));
@@ -237,7 +240,8 @@ bool BenchmarkFamilies::FindBenchmarks(std::string spec, std::vector<BenchmarkIn
   return true;
 }
 
-Benchmark* RegisterBenchmarkInternal(Benchmark* bench) {
+Benchmark* RegisterBenchmarkInternal(Benchmark* bench)
+{
   std::unique_ptr<Benchmark> bench_ptr(bench);
   BenchmarkFamilies* families = BenchmarkFamilies::GetInstance();
   families->AddBenchmark(std::move(bench_ptr));
@@ -275,7 +279,8 @@ Benchmark::Benchmark(const char* name)
 
 Benchmark::~Benchmark() {}
 
-Benchmark* Benchmark::Arg(int64_t x) {
+Benchmark* Benchmark::Arg(int64_t x)
+{
   CHECK(ArgsCnt() == -1 || ArgsCnt() == 1);
   args_.push_back({x});
   return this;
@@ -482,7 +487,8 @@ Benchmark* Benchmark::ThreadPerCpu()
 
 void Benchmark::SetName(const char* name) { name_ = name; }
 
-int Benchmark::ArgsCnt() const {
+int Benchmark::ArgsCnt() const
+{
   if (args_.empty()) {
     if (arg_names_.empty()) return -1;
     return static_cast<int>(arg_names_.size());

@@ -188,7 +188,8 @@ class BenchmarkRunner
   // So only the first repetition has to find/calculate it,
   // the other repetitions will just use that precomputed iteration count.
 
-  struct IterationResults {
+  struct IterationResults
+  {
     internal::ThreadManager::Result results;
     IterationCount iters;
     double seconds;
@@ -239,14 +240,16 @@ class BenchmarkRunner
     i.seconds = i.results.cpu_time_used;
     if (b.use_manual_time) {
       i.seconds = i.results.manual_time_used;
-    } else if (b.use_real_time) {
+    }
+    else if (b.use_real_time) {
       i.seconds = i.results.real_time_used;
     }
 
     return i;
   }
 
-  IterationCount PredictNumItersNeeded(const IterationResults& i) const {
+  IterationCount PredictNumItersNeeded(const IterationResults& i) const
+  {
     // See how much iterations should be increased by.
     // Note: Avoid division by zero with max(seconds, 1ns).
     double multiplier = min_time * 1.4 / std::max(i.seconds, 1e-9);
@@ -296,6 +299,7 @@ class BenchmarkRunner
     // is *only* calculated for the *first* repetition, and other repetitions
     // simply use that precomputed iteration count.
     for (;;) {
+
       i = DoNIterations();
 
       // Do we consider the results to be significant?
@@ -303,15 +307,11 @@ class BenchmarkRunner
       // it has calculated the correct iteration time, so we have run that very
       // iteration count just now. No need to calculate anything. Just report.
       // Else, the normal rules apply.
-      const bool results_are_significant = !is_the_first_repetition ||
-                                           has_explicit_iteration_count ||
-                                           ShouldReportIterationResults(i);
-
+      const bool results_are_significant = !is_the_first_repetition || has_explicit_iteration_count || ShouldReportIterationResults(i);
       if (results_are_significant) break;  // Good, let's report them!
 
       // Nope, bad iteration. Let's re-estimate the hopefully-sufficient
       // iteration count, and run the benchmark again...
-
       iters = PredictNumItersNeeded(i);
       assert(iters > i.iters &&
              "if we did more iterations than we want to do the next time, "
