@@ -13,22 +13,26 @@ class ThreadTimer
       : measure_process_cpu_time(measure_process_cpu_time_) {}
 
  public:
-  static ThreadTimer Create() {
+  static ThreadTimer Create()
+  {
     return ThreadTimer(/*measure_process_cpu_time_=*/false);
   }
-  static ThreadTimer CreateProcessCpuTime() {
+  static ThreadTimer CreateProcessCpuTime()
+  {
     return ThreadTimer(/*measure_process_cpu_time_=*/true);
   }
 
   // Called by each thread
-  void StartTimer() {
+  void StartTimer()
+  {
     running_ = true;
     start_real_time_ = ChronoClockNow();
     start_cpu_time_ = ReadCpuTimerOfChoice();
   }
 
   // Called by each thread
-  void StopTimer() {
+  void StopTimer()
+  {
     CHECK(running_);
     running_ = false;
     real_time_used_ += ChronoClockNow() - start_real_time_;
@@ -44,25 +48,29 @@ class ThreadTimer
   bool running() const { return running_; }
 
   // REQUIRES: timer is not running
-  double real_time_used() const {
+  double real_time_used() const
+  {
     CHECK(!running_);
     return real_time_used_;
   }
 
   // REQUIRES: timer is not running
-  double cpu_time_used() const {
+  double cpu_time_used() const
+  {
     CHECK(!running_);
     return cpu_time_used_;
   }
 
   // REQUIRES: timer is not running
-  double manual_time_used() const {
+  double manual_time_used() const
+  {
     CHECK(!running_);
     return manual_time_used_;
   }
 
  private:
-  double ReadCpuTimerOfChoice() const {
+  double ReadCpuTimerOfChoice() const
+  {
     if (measure_process_cpu_time) return ProcessCPUUsage();
     return ThreadCPUUsage();
   }

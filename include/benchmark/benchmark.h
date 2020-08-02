@@ -730,7 +730,8 @@ inline BENCHMARK_ALWAYS_INLINE bool State::KeepRunningInternal(IterationCount n,
   return false;
 }
 
-struct State::StateIterator {
+struct State::StateIterator
+{
   struct BENCHMARK_UNUSED Value {};
   typedef std::forward_iterator_tag iterator_category;
   typedef Value value_type;
@@ -744,22 +745,23 @@ struct State::StateIterator {
   StateIterator() : cached_(0), parent_() {}
 
   BENCHMARK_ALWAYS_INLINE
-  explicit StateIterator(State* st)
-      : cached_(st->error_occurred_ ? 0 : st->max_iterations), parent_(st) {}
+  explicit StateIterator(State* st) : cached_(st->error_occurred_ ? 0 : st->max_iterations), parent_(st) {}
 
  public:
   BENCHMARK_ALWAYS_INLINE
   Value operator*() const { return Value(); }
 
   BENCHMARK_ALWAYS_INLINE
-  StateIterator& operator++() {
+  StateIterator& operator++()
+  {
     assert(cached_ > 0);
     --cached_;
     return *this;
   }
 
   BENCHMARK_ALWAYS_INLINE
-  bool operator!=(StateIterator const&) const {
+  bool operator!=(StateIterator const&) const
+  {
     if (BENCHMARK_BUILTIN_EXPECT(cached_ != 0, true)) return true;
     parent_->FinishKeepRunning();
     return false;
@@ -770,10 +772,12 @@ struct State::StateIterator {
   State* const parent_;
 };
 
-inline BENCHMARK_ALWAYS_INLINE State::StateIterator State::begin() {
+inline BENCHMARK_ALWAYS_INLINE State::StateIterator State::begin()
+{
   return StateIterator(this);
 }
-inline BENCHMARK_ALWAYS_INLINE State::StateIterator State::end() {
+inline BENCHMARK_ALWAYS_INLINE State::StateIterator State::end()
+{
   StartKeepRunning();
   return StateIterator();
 }
@@ -1017,7 +1021,8 @@ class FunctionBenchmark : public Benchmark
 
 #ifdef BENCHMARK_HAS_CXX11
 template <class Lambda>
-class LambdaBenchmark : public Benchmark {
+class LambdaBenchmark : public Benchmark
+{
  public:
   virtual void Run(State& st) { lambda_(st); }
 
@@ -1067,7 +1072,8 @@ internal::Benchmark* RegisterBenchmark(const char* name, Lambda&& fn,
 #endif
 
 // The base class for all fixture tests.
-class Fixture : public internal::Benchmark {
+class Fixture : public internal::Benchmark
+{
  public:
   Fixture() : internal::Benchmark("") {}
 

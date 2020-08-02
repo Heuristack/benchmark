@@ -32,7 +32,8 @@ static void BM_MapLookup(benchmark::State& state) {
 BENCHMARK(BM_MapLookup)->Range(1 << 3, 1 << 12);
 
 // Using fixtures.
-class MapFixture : public ::benchmark::Fixture {
+class MapFixture : public ::benchmark::Fixture
+{
  public:
   void SetUp(const ::benchmark::State& st) {
     m = ConstructRandomMap(static_cast<int>(st.range(0)));

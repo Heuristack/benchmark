@@ -112,14 +112,11 @@ BenchmarkReporter::Run CreateRunReport(
 // Adds the stats collected for the thread into *total.
 void RunInThread(const BenchmarkInstance* b, IterationCount iters, int thread_id, ThreadManager* manager)
 {
-  internal::ThreadTimer timer(b->measure_process_cpu_time
-          ? internal::ThreadTimer::CreateProcessCpuTime()
-          : internal::ThreadTimer::Create());
+  internal::ThreadTimer timer(b->measure_process_cpu_time ? internal::ThreadTimer::CreateProcessCpuTime() : internal::ThreadTimer::Create());
 
   State st = b->Run(iters, thread_id, &timer, manager);
 
-  CHECK(st.error_occurred() || st.iterations() >= st.max_iterations)
-      << "Benchmark returned before State::KeepRunning() returned false!";
+  CHECK(st.error_occurred() || st.iterations() >= st.max_iterations) << "Benchmark returned before State::KeepRunning() returned false!";
 
   {
     MutexLock l(manager->GetBenchmarkMutex());
@@ -142,8 +139,7 @@ class BenchmarkRunner
       : b(b_),
         complexity_reports(*complexity_reports_),
         min_time(!IsZero(b.min_time) ? b.min_time : FLAGS_benchmark_min_time),
-        repeats(b.repetitions != 0 ? b.repetitions
-                                   : FLAGS_benchmark_repetitions),
+        repeats(b.repetitions != 0 ? b.repetitions : FLAGS_benchmark_repetitions),
         has_explicit_iteration_count(b.iterations != 0),
         pool(b.threads - 1),
         iters(has_explicit_iteration_count ? b.iterations : 1)

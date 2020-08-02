@@ -193,7 +193,8 @@ void State::SetLabel(const char* label) {
   manager_->results.report_label_ = label;
 }
 
-void State::StartKeepRunning() {
+void State::StartKeepRunning()
+{
   CHECK(!started_ && !finished_);
   started_ = true;
   total_iterations_ = error_occurred_ ? 0 : max_iterations;

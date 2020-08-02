@@ -5,7 +5,8 @@
 #include <set>
 #include <vector>
 
-class MultipleRangesFixture : public ::benchmark::Fixture {
+class MultipleRangesFixture : public ::benchmark::Fixture
+{
  public:
   MultipleRangesFixture()
       : expectedValues({{1, 3, 5},
