@@ -120,7 +120,7 @@ void RunInThread(const BenchmarkInstance* b, IterationCount iters, int thread_id
 
   {
     MutexLock l(manager->GetBenchmarkMutex());
-    internal::ThreadManager::Result& results = manager->results;
+    internal::ThreadManager::Result & results = manager->results;
     results.iterations += st.iterations();
     results.cpu_time_used += timer.cpu_time_used();
     results.real_time_used += timer.real_time_used();
@@ -227,8 +227,7 @@ class BenchmarkRunner
     // If we were measuring whole-process CPU usage, adjust the CPU time too.
     if (b.measure_process_cpu_time) i.results.cpu_time_used /= b.threads;
 
-    VLOG(2) << "Ran in " << i.results.cpu_time_used << "/"
-            << i.results.real_time_used << "\n";
+    VLOG(2) << "Ran in " << i.results.cpu_time_used << "/" << i.results.real_time_used << "\n";
 
     // So for how long were we running?
     i.iters = iters;
@@ -332,10 +331,7 @@ class BenchmarkRunner
     }
 
     // Ok, now actualy report.
-    BenchmarkReporter::Run report =
-        CreateRunReport(b, i.results, memory_iterations, memory_result,
-                        i.seconds, repetition_index);
-
+    BenchmarkReporter::Run report = CreateRunReport(b, i.results, memory_iterations, memory_result, i.seconds, repetition_index);
     if (!report.error_occurred && b.complexity != oNone)
       complexity_reports.push_back(report);
 

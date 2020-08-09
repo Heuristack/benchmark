@@ -41,7 +41,8 @@ inline LogType& operator<<(LogType& log, EndLType* m) {
   return log;
 }
 
-inline int& LogLevel() {
+inline int& LogLevel()
+{
   static int log_level = 0;
   return log_level;
 }

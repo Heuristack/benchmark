@@ -188,7 +188,8 @@ bool ParseInt32Flag(const char* str, const char* flag, int32_t* value)
   return ParseInt32(std::string("The value of flag --") + flag, value_str, value);
 }
 
-bool ParseDoubleFlag(const char* str, const char* flag, double* value) {
+bool ParseDoubleFlag(const char* str, const char* flag, double* value)
+{
   // Gets the value of the flag as a string.
   const char* const value_str = ParseFlagValue(str, flag, false);
 
@@ -196,8 +197,7 @@ bool ParseDoubleFlag(const char* str, const char* flag, double* value) {
   if (value_str == nullptr) return false;
 
   // Sets *value to the value of the flag.
-  return ParseDouble(std::string("The value of flag --") + flag, value_str,
-                     value);
+  return ParseDouble(std::string("The value of flag --") + flag, value_str, value);
 }
 
 bool ParseStringFlag(const char * str, const char * flag, std::string * value)

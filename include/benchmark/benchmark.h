@@ -348,6 +348,7 @@ inline BENCHMARK_ALWAYS_INLINE void DoNotOptimize(Tp const& value) {
 class Counter
 {
  public:
+
   enum Flags
   {
     kDefaults = 0,
@@ -389,19 +390,16 @@ class Counter
   OneK oneK;
 
   BENCHMARK_ALWAYS_INLINE
-  Counter(double v = 0., Flags f = kDefaults, OneK k = kIs1000)
-      : value(v), flags(f), oneK(k) {}
-
+  Counter(double v = 0., Flags f = kDefaults, OneK k = kIs1000) : value(v), flags(f), oneK(k) {}
   BENCHMARK_ALWAYS_INLINE operator double const&() const { return value; }
   BENCHMARK_ALWAYS_INLINE operator double&() { return value; }
 };
 
 // A helper for user code to create unforeseen combinations of Flags, without
 // having to do this cast manually each time, or providing this operator.
-Counter::Flags inline operator|(const Counter::Flags& LHS,
-                                const Counter::Flags& RHS) {
-  return static_cast<Counter::Flags>(static_cast<int>(LHS) |
-                                     static_cast<int>(RHS));
+Counter::Flags inline operator|(const Counter::Flags& LHS, const Counter::Flags& RHS)
+{
+  return static_cast<Counter::Flags>(static_cast<int>(LHS) | static_cast<int>(RHS));
 }
 
 // This is the container for the user-defined counters.
@@ -698,7 +696,8 @@ inline BENCHMARK_ALWAYS_INLINE bool State::KeepRunning()
   return KeepRunningInternal(1, /*is_batch=*/false);
 }
 
-inline BENCHMARK_ALWAYS_INLINE bool State::KeepRunningBatch(IterationCount n) {
+inline BENCHMARK_ALWAYS_INLINE bool State::KeepRunningBatch(IterationCount n)
+{
   return KeepRunningInternal(n, /*is_batch=*/true);
 }
 
@@ -709,10 +708,12 @@ inline BENCHMARK_ALWAYS_INLINE bool State::KeepRunningInternal(IterationCount n,
   assert(n > 0);
   // n must be 1 unless is_batch is true.
   assert(is_batch || n == 1);
+
   if (BENCHMARK_BUILTIN_EXPECT(total_iterations_ >= n, true)) {
     total_iterations_ -= n;
     return true;
   }
+
   if (!started_) {
     StartKeepRunning();
     if (!error_occurred_ && total_iterations_ >= n) {
@@ -726,6 +727,7 @@ inline BENCHMARK_ALWAYS_INLINE bool State::KeepRunningInternal(IterationCount n,
     total_iterations_ = 0;
     return true;
   }
+
   FinishKeepRunning();
   return false;
 }

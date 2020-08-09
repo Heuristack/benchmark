@@ -115,9 +115,9 @@ void UseCharPointer(char const volatile*) {}
 
 }  // namespace internal
 
-State::State(IterationCount max_iters, const std::vector<int64_t>& ranges,
-             int thread_i, int n_threads, internal::ThreadTimer* timer,
-             internal::ThreadManager* manager)
+State::State(IterationCount max_iters, std::vector<int64_t> const & ranges,
+             int thread_i, int n_threads, internal::ThreadTimer * timer,
+             internal::ThreadManager * manager)
     : total_iterations_(0),
       batch_leftover_(0),
       max_iterations(max_iters),
@@ -130,7 +130,8 @@ State::State(IterationCount max_iters, const std::vector<int64_t>& ranges,
       thread_index(thread_i),
       threads(n_threads),
       timer_(timer),
-      manager_(manager) {
+      manager_(manager)
+{
   CHECK(max_iterations != 0) << "At least one iteration must be run";
   CHECK_LT(thread_index, threads) << "thread_index must be less than threads";
 
@@ -147,11 +148,14 @@ State::State(IterationCount max_iters, const std::vector<int64_t>& ranges,
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Winvalid-offsetof"
 #endif
+  /**
+   *
+   * First cache line optimization
+   *
+  **/
   // Offset tests to ensure commonly accessed data is on the first cache line.
   const int cache_line_size = 64;
-  static_assert(offsetof(State, error_occurred_) <=
-                    (cache_line_size - sizeof(error_occurred_)),
-                "");
+  static_assert(offsetof(State, error_occurred_) <= (cache_line_size - sizeof(error_occurred_)), "");
 #if defined(__INTEL_COMPILER)
 #pragma warning pop
 #elif defined(__GNUC__)
@@ -159,18 +163,21 @@ State::State(IterationCount max_iters, const std::vector<int64_t>& ranges,
 #endif
 }
 
-void State::PauseTiming() {
+void State::PauseTiming()
+{
   // Add in time accumulated so far
   CHECK(started_ && !finished_ && !error_occurred_);
   timer_->StopTimer();
 }
 
-void State::ResumeTiming() {
+void State::ResumeTiming()
+{
   CHECK(started_ && !finished_ && !error_occurred_);
   timer_->StartTimer();
 }
 
-void State::SkipWithError(const char* msg) {
+void State::SkipWithError(const char* msg)
+{
   CHECK(msg);
   error_occurred_ = true;
   {
@@ -184,11 +191,13 @@ void State::SkipWithError(const char* msg) {
   if (timer_->running()) timer_->StopTimer();
 }
 
-void State::SetIterationTime(double seconds) {
+void State::SetIterationTime(double seconds)
+{
   timer_->SetIterationTime(seconds);
 }
 
-void State::SetLabel(const char* label) {
+void State::SetLabel(const char* label)
+{
   MutexLock l(manager_->GetBenchmarkMutex());
   manager_->results.report_label_ = label;
 }
@@ -202,7 +211,8 @@ void State::StartKeepRunning()
   if (!error_occurred_) ResumeTiming();
 }
 
-void State::FinishKeepRunning() {
+void State::FinishKeepRunning()
+{
   CHECK(started_ && (!finished_ || error_occurred_));
   if (!error_occurred_) {
     PauseTiming();
@@ -225,6 +235,7 @@ void RunBenchmarks(const std::vector<BenchmarkInstance>& benchmarks, BenchmarkRe
   bool might_have_aggregates = FLAGS_benchmark_repetitions > 1;
   size_t name_field_width = 10;
   size_t stat_field_width = 0;
+
   for (const BenchmarkInstance& benchmark : benchmarks) {
     name_field_width = std::max<size_t>(name_field_width, benchmark.name.str().size());
     might_have_aggregates |= benchmark.repetitions > 1;
@@ -255,6 +266,11 @@ void RunBenchmarks(const std::vector<BenchmarkInstance>& benchmarks, BenchmarkRe
     flushStreams(file_reporter);
 
     for (const auto& benchmark : benchmarks) {
+      /**
+       *
+       * Run the benchmark
+       *
+      **/
       RunResults run_results = RunBenchmark(benchmark, &complexity_reports);
 
       auto report = [&run_results](BenchmarkReporter* reporter, bool report_aggregates_only)
@@ -276,6 +292,7 @@ void RunBenchmarks(const std::vector<BenchmarkInstance>& benchmarks, BenchmarkRe
       flushStreams(file_reporter);
     }
   }
+
   display_reporter->Finalize();
   if (file_reporter) file_reporter->Finalize();
   flushStreams(display_reporter);
@@ -432,7 +449,8 @@ size_t RunSpecifiedBenchmarks(BenchmarkReporter* display_reporter, BenchmarkRepo
   return benchmarks.size();
 }
 
-void RegisterMemoryManager(MemoryManager* manager) {
+void RegisterMemoryManager(MemoryManager* manager)
+{
   internal::memory_manager = manager;
 }
 

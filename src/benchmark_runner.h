@@ -30,7 +30,7 @@ namespace benchmark {
 
 namespace internal {
 
-extern MemoryManager* memory_manager;
+extern MemoryManager * memory_manager;
 
 struct RunResults
 {

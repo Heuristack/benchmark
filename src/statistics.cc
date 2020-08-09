@@ -74,15 +74,12 @@ double StatisticsStdDev(const std::vector<double>& v) {
   return Sqrt(v.size() / (v.size() - 1.0) * (avg_squares - Sqr(mean)));
 }
 
-std::vector<BenchmarkReporter::Run> ComputeStats(const std::vector<BenchmarkReporter::Run>& reports)
+std::vector<BenchmarkReporter::Run> ComputeStats(std::vector<BenchmarkReporter::Run> const & reports)
 {
   typedef BenchmarkReporter::Run Run;
   std::vector<Run> results;
 
-  auto error_count =
-      std::count_if(reports.begin(), reports.end(),
-                    [](Run const& run) { return run.error_occurred; });
-
+  auto error_count = std::count_if(reports.begin(), reports.end(), [](Run const& run) { return run.error_occurred; });
   if (reports.size() - error_count < 2) {
     // We don't report aggregated data if there was a single run.
     return results;
@@ -99,19 +96,23 @@ std::vector<BenchmarkReporter::Run> ComputeStats(const std::vector<BenchmarkRepo
   // can take this information from the first benchmark.
   const IterationCount run_iterations = reports.front().iterations;
   // create stats for user counters
-  struct CounterStat {
+  struct CounterStat
+  {
     Counter c;
     std::vector<double> s;
   };
   std::map<std::string, CounterStat> counter_stats;
-  for (Run const& r : reports) {
-    for (auto const& cnt : r.counters) {
+  for (Run const & r : reports) {
+    for (auto const & cnt : r.counters) {
       auto it = counter_stats.find(cnt.first);
+      // note : not found
       if (it == counter_stats.end()) {
         counter_stats.insert({cnt.first, {cnt.second, std::vector<double>{}}});
         it = counter_stats.find(cnt.first);
         it->second.s.reserve(reports.size());
-      } else {
+      }
+      // note : found
+      else {
         CHECK_EQ(counter_stats[cnt.first].c.flags, cnt.second.flags);
       }
     }
@@ -141,8 +142,7 @@ std::vector<BenchmarkReporter::Run> ComputeStats(const std::vector<BenchmarkRepo
     }
   }
 
-  const double iteration_rescale_factor =
-      double(reports.size()) / double(run_iterations);
+  const double iteration_rescale_factor = double(reports.size()) / double(run_iterations);
 
   for (const auto& Stat : *reports[0].statistics) {
     // Get the data from the accumulator to BenchmarkReporter::Run's.
